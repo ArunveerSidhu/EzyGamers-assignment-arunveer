@@ -1,0 +1,2 @@
+export { useFontsLoader } from "./useFontsLoader";
+
