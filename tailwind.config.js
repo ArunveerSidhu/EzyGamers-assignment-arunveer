@@ -6,6 +6,7 @@ module.exports = {
     extend: {
       fontFamily: {
         "star-crush": ["StarCrush"],
+        "gothic": ["Gothic"],
       },
     },
   },
