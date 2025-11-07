@@ -7,6 +7,7 @@ module.exports = {
       fontFamily: {
         "star-crush": ["StarCrush"],
         "gothic": ["Gothic"],
+        "luckiest": ["Luckiest"],
       },
     },
   },
