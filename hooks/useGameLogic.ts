@@ -31,7 +31,7 @@ export function useGameLogic(levelId: number): UseGameLogicReturn {
     const grid = generateGrid(levelConfig);
     const gridState: GridState = {
       cells: grid,
-      visibleRows: levelConfig.initialRows,
+      filledRows: levelConfig.initialRows,
       totalRows: levelConfig.totalRows,
     };
 
@@ -109,9 +109,9 @@ export function useGameLogic(levelId: number): UseGameLogicReturn {
           );
           const newMatchedCount = countMatchedCells(
             newCells,
-            prev.grid.visibleRows
+            prev.grid.filledRows
           );
-          const isVictory = areAllCellsMatched(newCells, prev.grid.visibleRows);
+          const isVictory = areAllCellsMatched(newCells, prev.grid.filledRows);
 
           return {
             ...prev,
@@ -145,25 +145,25 @@ export function useGameLogic(levelId: number): UseGameLogicReturn {
 
   const addRow = useCallback(() => {
     setGameState((prev) => {
-      const newVisibleRows = Math.min(
-        prev.grid.visibleRows + levelConfig.maxAddRows,
+      const newFilledRows = Math.min(
+        prev.grid.filledRows + levelConfig.maxAddRows,
         prev.grid.totalRows
       );
 
-      if (newVisibleRows === prev.grid.visibleRows) {
-        return prev; // No more rows to add
+      if (newFilledRows === prev.grid.filledRows) {
+        return prev;
       }
 
       const newTotalCells = countTotalVisibleCells(
         prev.grid.cells,
-        newVisibleRows
+        newFilledRows
       );
 
       return {
         ...prev,
         grid: {
           ...prev.grid,
-          visibleRows: newVisibleRows,
+          filledRows: newFilledRows,
         },
         totalCells: newTotalCells,
       };
@@ -175,10 +175,10 @@ export function useGameLogic(levelId: number): UseGameLogicReturn {
   useEffect(() => {
     if (!gameState.isGameOver && !gameState.isPaused) {
       const hasMatches = isGameWinnable(
-        gameState.grid.cells.slice(0, gameState.grid.visibleRows)
+        gameState.grid.cells.slice(0, gameState.grid.filledRows)
       );
       
-      if (!hasMatches && !areAllCellsMatched(gameState.grid.cells, gameState.grid.visibleRows)) {
+      if (!hasMatches && !areAllCellsMatched(gameState.grid.cells, gameState.grid.filledRows)) {
         setGameState((prev) => ({
           ...prev,
           isGameOver: true,

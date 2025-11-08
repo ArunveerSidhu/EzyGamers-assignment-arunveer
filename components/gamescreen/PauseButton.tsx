@@ -1,4 +1,6 @@
-import { Text, TouchableOpacity } from "react-native";
+import { TouchableOpacity } from "react-native";
+import { PauseIcon, ResumeIcon } from "../icons";
+
 
 interface PauseButtonProps {
   onPress: () => void;
@@ -10,11 +12,9 @@ export default function PauseButton({ onPress, isPaused = false }: PauseButtonPr
     <TouchableOpacity
       activeOpacity={0.7}
       onPress={onPress}
-      className="bg-yellow-600 rounded-xl py-4 items-center border-2 border-yellow-400 shadow-lg"
+      className="bg-[#1c2128] rounded-none py-4 px-4 items-center border-2 border-[#40444c] shadow-lg"
     >
-      <Text className="text-white text-xl font-bold">
-        {isPaused ? 'Resume' : 'Pause'}
-      </Text>
+     {isPaused ? <ResumeIcon width={24} height={24} /> : <PauseIcon width={24} height={24} fill="#fff" />}
     </TouchableOpacity>
   );
 }

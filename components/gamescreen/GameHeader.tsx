@@ -1,4 +1,3 @@
-import { useRouter } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
 
 interface GameHeaderProps {
@@ -6,6 +5,7 @@ interface GameHeaderProps {
   timeDisplay: string;
   matchedCount: number;
   totalCount: number;
+  onBackPress: () => void;
 }
 
 export default function GameHeader({
@@ -13,22 +13,22 @@ export default function GameHeader({
   timeDisplay,
   matchedCount,
   totalCount,
+  onBackPress,
 }: GameHeaderProps) {
-  const router = useRouter();
 
   return (
-    <View className="px-4 mt-6">
+    <View className="px-7 mt-8">
       {/* Level Name */}
-      <Text className="text-white text-4xl text-center font-gothic mb-4">
+      <Text className="text-white text-4xl text-center font-gothic mb-8">
         {levelName}
       </Text>
 
       {/* Stats Row */}
-      <View className="flex-row justify-between items-center bg-[#1c2128]/80 rounded-xl px-4 py-3 border border-[#40444c]">
+      <View className="flex-row justify-between items-center bg-[#1c2128]/80 rounded-none py-3 border border-[#40444c]">
         {/* Timer */}
         <View className="flex-1 items-center">
           <Text className="text-gray-400 text-xs mb-1">TIME</Text>
-          <Text className="text-white text-2xl font-bold font-luckiest">
+          <Text className="text-white text-2xl font-luckiest">
             {timeDisplay}
           </Text>
         </View>
@@ -39,7 +39,7 @@ export default function GameHeader({
         {/* Progress */}
         <View className="flex-1 items-center">
           <Text className="text-gray-400 text-xs mb-1">MATCHED</Text>
-          <Text className="text-white text-2xl font-bold font-luckiest">
+          <Text className="text-white text-2xl font-luckiest">
             {matchedCount}/{totalCount}
           </Text>
         </View>
@@ -49,11 +49,11 @@ export default function GameHeader({
 
         {/* Back Button */}
         <TouchableOpacity
-          onPress={() => router.back()}
+          onPress={onBackPress}
           className="flex-1 items-center"
           activeOpacity={0.7}
         >
-          <Text className="text-red-400 text-lg font-bold">← BACK</Text>
+          <Text className="text-red-400 text-xl font-luckiest mt-2">BACK!</Text>
         </TouchableOpacity>
       </View>
     </View>

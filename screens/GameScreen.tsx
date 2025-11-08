@@ -1,13 +1,18 @@
 import { AddRowButton, GameBoard, GameHeader, PauseButton } from "@/components/gamescreen";
+import { GameOverModal, QuitConfirmModal } from "@/components/modals";
 import { useGameLogic, useTimer } from "@/hooks";
-import { useLocalSearchParams } from "expo-router";
-import { useEffect } from "react";
-import { ImageBackground, ScrollView, Text, View } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+import { ImageBackground, NativeScrollEvent, NativeSyntheticEvent, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function GameScreen() {
     const params = useLocalSearchParams();
+    const router = useRouter();
     const levelId = Number(params.levelId) || 1;
+    const [isAtBottom, setIsAtBottom] = useState(false);
+    const [showQuitModal, setShowQuitModal] = useState(false);
 
     const {
         gameState,
@@ -44,12 +49,37 @@ export default function GameScreen() {
     };
 
     const handleAddRow = () => {
-        if (gameState.grid.visibleRows < gameState.grid.totalRows) {
+        if (gameState.grid.filledRows < gameState.grid.totalRows) {
             addRow();
         }
     };
 
-    const canAddRows = gameState.grid.visibleRows < gameState.grid.totalRows;
+    const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+        const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
+        const isBottom = layoutMeasurement.height + contentOffset.y >= contentSize.height - 5;
+        setIsAtBottom(isBottom);
+    };
+
+    const handleBackPress = () => {
+        setShowQuitModal(true);
+    };
+
+    const handleQuitConfirm = () => {
+        setShowQuitModal(false);
+        router.back();
+    };
+
+    const handleReplay = () => {
+        resetGame();
+        reset();
+        resume();
+    };
+
+    const handleQuitFromGameOver = () => {
+        router.back();
+    };
+
+    const canAddRows = gameState.grid.filledRows < gameState.grid.totalRows;
 
     return (
         <ImageBackground 
@@ -65,42 +95,31 @@ export default function GameScreen() {
                     timeDisplay={formatTime()}
                     matchedCount={gameState.matchedCount}
                     totalCount={gameState.totalCells}
+                    onBackPress={handleBackPress}
                 />
 
-                <ScrollView 
-                    className="flex-1 px-4 mt-6"
-                    contentContainerClassName="items-center"
-                >
-                    <GameBoard 
-                        cells={gameState.grid.cells}
-                        visibleRows={gameState.grid.visibleRows}
-                        onCellPress={handleCellPress}
-                    />
-                </ScrollView>
+                <View className="px-4 mt-14 relative" style={{ maxHeight: 400 }}>
+                    <ScrollView 
+                        contentContainerStyle={{ alignItems: 'center' }}
+                        showsVerticalScrollIndicator={false}
+                        onScroll={handleScroll}
+                        scrollEventThrottle={16}
+                    >
+                        <GameBoard 
+                            cells={gameState.grid.cells}
+                            filledRows={gameState.grid.filledRows}
+                            onCellPress={handleCellPress}
+                        />
+                    </ScrollView>
+                    {!isAtBottom && (
+                        <LinearGradient
+                            colors={['transparent', 'rgba(0, 0, 0, 0.3)']}
+                            className="absolute bottom-0 left-0 right-0 h-10 pointer-events-none mx-7"
+                        />
+                    )}
+                </View>
 
-                {gameState.isVictory && (
-                    <View className="absolute inset-0 items-center justify-center bg-black/70">
-                        <Text className="text-green-400 text-5xl font-bold mb-4">
-                            VICTORY! 🎉
-                        </Text>
-                        <Text className="text-white text-2xl">
-                            Time: {formatTime()}
-                        </Text>
-                    </View>
-                )}
-
-                {gameState.isGameOver && !gameState.isVictory && (
-                    <View className="absolute inset-0 items-center justify-center bg-black/70">
-                        <Text className="text-red-400 text-5xl font-bold mb-4">
-                            GAME OVER 😢
-                        </Text>
-                        <Text className="text-white text-2xl">
-                            Try Again!
-                        </Text>
-                    </View>
-                )}
-
-                <View className="px-4 pb-10 gap-6 flex-row justify-center items-center">
+                <View className="px-4 gap-4 flex-row justify-center items-center mt-20">
                     <AddRowButton 
                         onPress={handleAddRow}
                         disabled={!canAddRows}
@@ -111,6 +130,20 @@ export default function GameScreen() {
                         isPaused={gameState.isPaused}
                     />
                 </View>
+
+                <QuitConfirmModal
+                    visible={showQuitModal}
+                    onCancel={() => setShowQuitModal(false)}
+                    onConfirm={handleQuitConfirm}
+                />
+
+                <GameOverModal
+                    visible={gameState.isGameOver}
+                    isVictory={gameState.isVictory}
+                    timeDisplay={formatTime()}
+                    onReplay={handleReplay}
+                    onQuit={handleQuitFromGameOver}
+                />
             </SafeAreaView>
         </ImageBackground>
     );

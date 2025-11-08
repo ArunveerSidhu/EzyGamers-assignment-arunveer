@@ -9,7 +9,7 @@ export interface Cell {
 
 export interface GridState {
   cells: Cell[][];
-  visibleRows: number;
+  filledRows: number;
   totalRows: number;
 }
 

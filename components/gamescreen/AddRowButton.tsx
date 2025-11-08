@@ -1,4 +1,5 @@
-import { Text, TouchableOpacity } from "react-native";
+import { AddIcon } from "@/components/icons";
+import { TouchableOpacity } from "react-native";
 
 interface AddRowButtonProps {
   onPress: () => void;
@@ -11,13 +12,9 @@ export default function AddRowButton({ onPress, disabled = false }: AddRowButton
       activeOpacity={0.7}
       onPress={onPress}
       disabled={disabled}
-      className={`rounded-xl py-4 items-center border-2 shadow-lg ${
-        disabled 
-          ? 'bg-gray-500 border-gray-400 opacity-50' 
-          : 'bg-green-600 border-green-400'
-      }`}
+      className="rounded-none py-4 px-4 items-center border-2 shadow-lg bg-[#1c2128] border-[#40444c]"
     >
-      <Text className="text-white text-xl font-bold">Add Row</Text>
+     <AddIcon width={24} height={24} fill={disabled ? "#4a4a4a" : "#fff"} />
     </TouchableOpacity>
   );
 }
