@@ -62,13 +62,20 @@ function checkPathClear(cell1: Cell, cell2: Cell, grid: Cell[][], direction: 'ho
   }
 }
 
-// Find all possible valid matches in the grid
-export function findPossibleMatches(grid: Cell[][]): [Cell, Cell][] {
+// Find all possible valid matches in the grid (only checking visible rows)
+export function findPossibleMatches(grid: Cell[][], visibleRows?: number): [Cell, Cell][] {
   const matches: [Cell, Cell][] = [];
-  const flatCells = grid.flat().filter(cell => !cell.isMatched);
+  const rowsToCheck = visibleRows !== undefined ? visibleRows : grid.length;
+  
+  // Only get cells from visible rows
+  const flatCells = grid
+    .slice(0, rowsToCheck)
+    .flat()
+    .filter(cell => !cell.isMatched);
 
   for (let i = 0; i < flatCells.length; i++) {
     for (let j = i + 1; j < flatCells.length; j++) {
+      // Pass the full grid for proper adjacency checking
       if (isValidMatch(flatCells[i], flatCells[j], grid)) {
         matches.push([flatCells[i], flatCells[j]]);
       }
@@ -78,8 +85,8 @@ export function findPossibleMatches(grid: Cell[][]): [Cell, Cell][] {
   return matches;
 }
 
-export function isGameWinnable(grid: Cell[][]): boolean {
-  return findPossibleMatches(grid).length > 0;
+export function isGameWinnable(grid: Cell[][], visibleRows?: number): boolean {
+  return findPossibleMatches(grid, visibleRows).length > 0;
 }
 
 export function areAllCellsMatched(grid: Cell[][], visibleRows: number): boolean {

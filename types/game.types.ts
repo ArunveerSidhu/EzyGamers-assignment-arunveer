@@ -5,6 +5,7 @@ export interface Cell {
   col: number;
   isMatched: boolean;
   isSelected: boolean;
+  isShaking?: boolean;
 }
 
 export interface GridState {

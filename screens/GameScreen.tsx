@@ -21,11 +21,12 @@ export default function GameScreen() {
         resetGame,
         pauseGame,
         resumeGame,
+        setGameOver,
     } = useGameLogic(levelId);
 
     const { formatTime, pause, resume, reset } = useTimer(
         120,
-        () => console.log("Time's up!")
+        () => setGameOver()
     );
 
     useEffect(() => {
@@ -79,6 +80,11 @@ export default function GameScreen() {
         router.back();
     };
 
+    const handleNextLevel = () => {
+        router.replace(`/Game?levelId=${levelId + 1}`);
+    };
+
+    const hasNextLevel = levelId < 3;
     const canAddRows = gameState.grid.filledRows < gameState.grid.totalRows;
 
     return (
@@ -143,6 +149,8 @@ export default function GameScreen() {
                     timeDisplay={formatTime()}
                     onReplay={handleReplay}
                     onQuit={handleQuitFromGameOver}
+                    onNextLevel={handleNextLevel}
+                    hasNextLevel={hasNextLevel}
                 />
             </SafeAreaView>
         </ImageBackground>

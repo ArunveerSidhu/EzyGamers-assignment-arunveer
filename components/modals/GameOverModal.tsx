@@ -7,6 +7,8 @@ interface GameOverModalProps {
   timeDisplay: string;
   onReplay: () => void;
   onQuit: () => void;
+  onNextLevel?: () => void;
+  hasNextLevel?: boolean;
 }
 
 export default function GameOverModal({ 
@@ -14,7 +16,9 @@ export default function GameOverModal({
   isVictory, 
   timeDisplay, 
   onReplay, 
-  onQuit 
+  onQuit,
+  onNextLevel,
+  hasNextLevel = false
 }: GameOverModalProps) {
   return (
     <Modal visible={visible}>
@@ -36,6 +40,18 @@ export default function GameOverModal({
         )}
 
         <View className="gap-3">
+          {isVictory && hasNextLevel && onNextLevel && (
+            <TouchableOpacity
+              onPress={onNextLevel}
+              className="bg-blue-600 py-3 px-6 border-2 border-blue-700 rounded-none"
+              activeOpacity={0.7}
+            >
+              <Text className="text-white text-lg font-luckiest text-center">
+                NEXT LEVEL
+              </Text>
+            </TouchableOpacity>
+          )}
+
           <TouchableOpacity
             onPress={onReplay}
             className="bg-green-600 py-3 px-6 border-2 border-green-700 rounded-none"

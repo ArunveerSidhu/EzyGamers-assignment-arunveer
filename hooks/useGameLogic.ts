@@ -18,6 +18,7 @@ interface UseGameLogicReturn {
   resetGame: () => void;
   pauseGame: () => void;
   resumeGame: () => void;
+  setGameOver: () => void;
 }
 
 export function useGameLogic(levelId: number): UseGameLogicReturn {
@@ -57,6 +58,10 @@ export function useGameLogic(levelId: number): UseGameLogicReturn {
 
   const resumeGame = useCallback(() => {
     setGameState((prev) => ({ ...prev, isPaused: false }));
+  }, []);
+
+  const setGameOver = useCallback(() => {
+    setGameState((prev) => ({ ...prev, isGameOver: true, isVictory: false }));
   }, []);
 
   const handleCellPress = useCallback(
@@ -129,15 +134,26 @@ export function useGameLogic(levelId: number): UseGameLogicReturn {
         // Invalid match
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
 
-        // Clear selection
+        // Mark cells as shaking
         setGameState((prev) => ({
           ...prev,
-          selectedCell: null,
           grid: {
             ...prev.grid,
-            cells: clearAllSelections(prev.grid.cells),
+            cells: markCellsAsShaking(prev.grid.cells, selectedCell.id, cell.id),
           },
         }));
+
+        // Clear shake and selection after animation
+        setTimeout(() => {
+          setGameState((prev) => ({
+            ...prev,
+            selectedCell: null,
+            grid: {
+              ...prev.grid,
+              cells: clearShakeAndSelections(prev.grid.cells),
+            },
+          }));
+        }, 500);
       }
     },
     [gameState]
@@ -175,7 +191,8 @@ export function useGameLogic(levelId: number): UseGameLogicReturn {
   useEffect(() => {
     if (!gameState.isGameOver && !gameState.isPaused) {
       const hasMatches = isGameWinnable(
-        gameState.grid.cells.slice(0, gameState.grid.filledRows)
+        gameState.grid.cells,
+        gameState.grid.filledRows
       );
       
       if (!hasMatches && !areAllCellsMatched(gameState.grid.cells, gameState.grid.filledRows)) {
@@ -195,6 +212,7 @@ export function useGameLogic(levelId: number): UseGameLogicReturn {
     resetGame,
     pauseGame,
     resumeGame,
+    setGameOver,
   };
 }
 
@@ -229,6 +247,26 @@ function markCellsAsMatched(
         ? { ...cell, isMatched: true, isSelected: false }
         : { ...cell, isSelected: false }
     )
+  );
+}
+
+function markCellsAsShaking(
+  cells: Cell[][],
+  cellId1: string,
+  cellId2: string
+): Cell[][] {
+  return cells.map((row) =>
+    row.map((cell) =>
+      cell.id === cellId1 || cell.id === cellId2
+        ? { ...cell, isShaking: true }
+        : cell
+    )
+  );
+}
+
+function clearShakeAndSelections(cells: Cell[][]): Cell[][] {
+  return cells.map((row) =>
+    row.map((cell) => ({ ...cell, isSelected: false, isShaking: false }))
   );
 }
 

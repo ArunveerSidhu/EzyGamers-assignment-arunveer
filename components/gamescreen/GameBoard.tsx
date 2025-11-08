@@ -1,5 +1,6 @@
 import { Cell } from "@/types/game.types";
-import { Text, TouchableOpacity, View } from "react-native";
+import { View } from "react-native";
+import AnimatedCell from "./AnimatedCell";
 
 interface GameBoardProps {
   cells: Cell[][];
@@ -14,31 +15,18 @@ export default function GameBoard({ cells, filledRows, onCellPress }: GameBoardP
         <View key={rowIndex} className="flex-row">
           {row.map((cell) => {
             const isFilled = rowIndex < filledRows;
+            const isLastCol = cell.col === row.length - 1;
+            const isLastRow = rowIndex === cells.length - 1;
             
             return (
-              <TouchableOpacity
+              <AnimatedCell
                 key={cell.id}
-                activeOpacity={isFilled ? 0.7 : 1}
-                onPress={() => isFilled && onCellPress(cell)}
-                className={`w-12 h-12 items-center justify-center border-r border-b border-[#40444c] ${
-                  !isFilled ? 'bg-[#0a0e12]' : cell.isSelected ? 'bg-yellow-600' : ''
-                } ${cell.isMatched ? 'bg-[#1c2128] opacity-40' : ''}`}
-                style={{
-                  borderRightWidth: cell.col === row.length - 1 ? 0 : 1,
-                  borderBottomWidth: rowIndex === cells.length - 1 ? 0 : 1,
-                }}
-                disabled={cell.isMatched || !isFilled}
-              >
-                {isFilled && (
-                  <Text 
-                    className={`font-luckiest text-2xl mt-2 ${
-                      cell.isMatched ? 'text-gray-500' : cell.isSelected ? 'text-white' : 'text-white'
-                    }`}
-                  >
-                    {cell.value}
-                  </Text>
-                )}
-              </TouchableOpacity>
+                cell={cell}
+                isFilled={isFilled}
+                isLastCol={isLastCol}
+                isLastRow={isLastRow}
+                onPress={() => onCellPress(cell)}
+              />
             );
           })}
         </View>

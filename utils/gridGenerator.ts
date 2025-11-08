@@ -53,74 +53,56 @@ function weightedRandomNumber(weights: number[]): number {
   return 1;
 }
 
-// Fill grid with matching pairs - mix of horizontal, vertical, and scattered placements
+// Fill grid with matching pairs - ensures ALL cells have valid pairs
 function fillGridWithPairs(grid: Cell[][], levelConfig: LevelConfig): void {
   const { cols, totalRows, pairProbability } = levelConfig;
   const totalCells = cols * totalRows;
-  const used = new Set<string>();
   
-  // Create pairs with varied placements based on difficulty
-  const horizontalPairRatio = pairProbability; // Easy levels favor obvious horizontal pairs
-  
+  // Collect all cells
+  const allCells: { row: number; col: number }[] = [];
   for (let row = 0; row < totalRows; row++) {
     for (let col = 0; col < cols; col++) {
-      const cellKey = `${row}-${col}`;
-      if (used.has(cellKey)) continue;
-      
-      const useIdenticalPair = Math.random() < pairProbability;
-      let pairPlaced = false;
-      
-      // Try different pair placements based on difficulty
-      const placements = [];
-      
-      // Horizontal pair (always available if space)
-      if (col < cols - 1 && !used.has(`${row}-${col + 1}`)) {
-        placements.push({ r: row, c: col + 1, type: 'horizontal' });
-      }
-      
-      // Vertical pair (available for medium/hard levels)
-      if (row < totalRows - 1 && !used.has(`${row + 1}-${col}`) && Math.random() > horizontalPairRatio * 0.5) {
-        placements.push({ r: row + 1, c: col, type: 'vertical' });
-      }
-      
-      // Diagonal pair (for harder levels)
-      if (row < totalRows - 1 && col < cols - 1 && !used.has(`${row + 1}-${col + 1}`) && Math.random() > horizontalPairRatio) {
-        placements.push({ r: row + 1, c: col + 1, type: 'diagonal' });
-      }
-      
-      if (placements.length > 0) {
-        // Pick a random placement
-        const placement = placements[Math.floor(Math.random() * placements.length)];
-        
-        if (useIdenticalPair) {
-          const value = Math.floor(Math.random() * 9) + 1;
-          grid[row][col].value = value;
-          grid[placement.r][placement.c].value = value;
-        } else {
-          const value1 = Math.floor(Math.random() * 9) + 1;
-          const value2 = 10 - value1;
-          if (value2 >= 1 && value2 <= 9) {
-            grid[row][col].value = value1;
-            grid[placement.r][placement.c].value = value2;
-          } else {
-            const value = Math.floor(Math.random() * 9) + 1;
-            grid[row][col].value = value;
-            grid[placement.r][placement.c].value = value;
-          }
-        }
-        
-        used.add(cellKey);
-        used.add(`${placement.r}-${placement.c}`);
-        pairPlaced = true;
-      }
-      
-      // If no pair could be placed, fill with random and it will pair with another cell
-      if (!pairPlaced && !used.has(cellKey)) {
+      allCells.push({ row, col });
+    }
+  }
+  
+  // Shuffle to randomize pair distribution
+  shuffleArray(allCells);
+  
+  // Create pairs - process cells two at a time
+  for (let i = 0; i < allCells.length - 1; i += 2) {
+    const cell1 = allCells[i];
+    const cell2 = allCells[i + 1];
+    
+    const useIdenticalPair = Math.random() < pairProbability;
+    
+    if (useIdenticalPair) {
+      // Create identical pair
+      const value = Math.floor(Math.random() * 9) + 1;
+      grid[cell1.row][cell1.col].value = value;
+      grid[cell2.row][cell2.col].value = value;
+    } else {
+      // Create sum-to-10 pair
+      const value1 = Math.floor(Math.random() * 9) + 1;
+      const value2 = 10 - value1;
+      if (value2 >= 1 && value2 <= 9) {
+        grid[cell1.row][cell1.col].value = value1;
+        grid[cell2.row][cell2.col].value = value2;
+      } else {
+        // Fallback to identical pair if sum doesn't work
         const value = Math.floor(Math.random() * 9) + 1;
-        grid[row][col].value = value;
-        used.add(cellKey);
+        grid[cell1.row][cell1.col].value = value;
+        grid[cell2.row][cell2.col].value = value;
       }
     }
+  }
+  
+  // Handle odd number of cells (if any)
+  if (allCells.length % 2 === 1) {
+    const lastCell = allCells[allCells.length - 1];
+    // Find any cell with same value to pair with
+    const firstCell = allCells[0];
+    grid[lastCell.row][lastCell.col].value = grid[firstCell.row][firstCell.col].value;
   }
 }
 
