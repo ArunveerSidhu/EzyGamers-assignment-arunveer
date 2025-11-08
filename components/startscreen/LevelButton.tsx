@@ -19,7 +19,7 @@ export default function LevelButton({ levelName, imageSource, onPress }: LevelBu
                 resizeMode="stretch"
             />
             
-            <View className="flex flex-row bg-[#1c2128] rounded-b-lg w-full h-24 items-center justify-start gap-4 px-4 py-4 border-b-2 border-l-2 border-r-2 border-[#40444c]">
+            <View className="flex flex-row bg-[#1c2128] w-full h-24 items-center justify-start gap-4 px-4 py-4 border-b-2 border-l-2 border-r-2 border-[#40444c]">
                 <Image
                     source={imageSource}
                     className="h-full w-20"

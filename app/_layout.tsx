@@ -1,3 +1,4 @@
+import { MusicProvider } from "@/contexts/MusicContext";
 import { useFontsLoader } from "@/hooks/useFontsLoader";
 import * as NavigationBar from "expo-navigation-bar";
 import { Stack } from "expo-router";
@@ -36,5 +37,9 @@ export default function RootLayout() {
     return null;
   }
 
-  return <Stack screenOptions={{ headerShown: false }} />;
+  return (
+    <MusicProvider>
+      <Stack screenOptions={{ headerShown: false }} />
+    </MusicProvider>
+  );
 }

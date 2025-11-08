@@ -1,15 +1,18 @@
 import { AddRowButton, GameBoard, GameHeader, PauseButton } from "@/components/gamescreen";
+import { MuteIcon, UnmuteIcon } from "@/components/icons";
 import { GameOverModal, QuitConfirmModal } from "@/components/modals";
+import { useMusic } from "@/contexts/MusicContext";
 import { useGameLogic, useTimer } from "@/hooks";
 import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { ImageBackground, NativeScrollEvent, NativeSyntheticEvent, ScrollView, View } from "react-native";
+import { ImageBackground, NativeScrollEvent, NativeSyntheticEvent, ScrollView, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function GameScreen() {
     const params = useLocalSearchParams();
     const router = useRouter();
+    const { isMuted, toggleMute } = useMusic();
     const levelId = Number(params.levelId) || 1;
     const [isAtBottom, setIsAtBottom] = useState(false);
     const [showQuitModal, setShowQuitModal] = useState(false);
@@ -135,6 +138,18 @@ export default function GameScreen() {
                         onPress={handlePausePress}
                         isPaused={gameState.isPaused}
                     />
+
+                    <TouchableOpacity
+                        onPress={toggleMute}
+                        className="bg-[#1c2128] rounded-none py-4 px-4 items-center border-2 border-[#40444c] shadow-lg"
+                        activeOpacity={0.7}
+                    >
+                        {isMuted ? (
+                            <MuteIcon width={24} height={24} />
+                        ) : (
+                            <UnmuteIcon width={24} height={24} />
+                        )}
+                    </TouchableOpacity>
                 </View>
 
                 <QuitConfirmModal
