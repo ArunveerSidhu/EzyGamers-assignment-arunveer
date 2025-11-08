@@ -1,15 +1,13 @@
 import { LEVEL_CONFIGS } from "@/config/levelConfigs";
 import { Cell, GameState, GridState } from "@/types/game.types";
 import {
-  areAllCellsMatched,
   countMatchedCells,
   countTotalVisibleCells,
-  isGameWinnable,
   isValidMatch,
 } from "@/utils/gameHelpers";
 import { generateGrid } from "@/utils/gridGenerator";
 import * as Haptics from "expo-haptics";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 
 interface UseGameLogicReturn {
   gameState: GameState;
@@ -35,12 +33,15 @@ export function useGameLogic(levelId: number): UseGameLogicReturn {
       filledRows: levelConfig.initialRows,
       totalRows: levelConfig.totalRows,
     };
+    
+    // Total cells to match = ONLY initial visible cells (doesn't increase when adding rows)
+    const initialTotalCells = countTotalVisibleCells(grid, levelConfig.initialRows);
 
     return {
       grid: gridState,
       selectedCell: null,
       matchedCount: 0,
-      totalCells: countTotalVisibleCells(grid, levelConfig.initialRows),
+      totalCells: initialTotalCells, // Fixed - doesn't change when adding rows
       timeRemaining: levelConfig.timeLimit,
       isGameOver: false,
       isVictory: false,
@@ -116,7 +117,8 @@ export function useGameLogic(levelId: number): UseGameLogicReturn {
             newCells,
             prev.grid.filledRows
           );
-          const isVictory = areAllCellsMatched(newCells, prev.grid.filledRows);
+          // Victory when matched count equals initial total cells (not current visible cells)
+          const isVictory = newMatchedCount >= prev.totalCells;
 
           return {
             ...prev,
@@ -170,40 +172,22 @@ export function useGameLogic(levelId: number): UseGameLogicReturn {
         return prev;
       }
 
-      const newTotalCells = countTotalVisibleCells(
-        prev.grid.cells,
-        newFilledRows
-      );
-
+      // totalCells stays the same - only initial cells count for victory
       return {
         ...prev,
         grid: {
           ...prev.grid,
           filledRows: newFilledRows,
         },
-        totalCells: newTotalCells,
+        // totalCells NOT updated - victory condition stays at initial cells only
       };
     });
 
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
   }, [levelConfig]);
 
-  useEffect(() => {
-    if (!gameState.isGameOver && !gameState.isPaused) {
-      const hasMatches = isGameWinnable(
-        gameState.grid.cells,
-        gameState.grid.filledRows
-      );
-      
-      if (!hasMatches && !areAllCellsMatched(gameState.grid.cells, gameState.grid.filledRows)) {
-        setGameState((prev) => ({
-          ...prev,
-          isGameOver: true,
-          isVictory: false,
-        }));
-      }
-    }
-  }, [gameState.matchedCount]);
+  // Removed "no moves = game over" logic
+  // Game only ends on: victory (all initial cells matched) or timeout
 
   return {
     gameState,

@@ -1,7 +1,7 @@
 import { Cell, LevelConfig } from "@/types/game.types";
 
 export function generateGrid(levelConfig: LevelConfig): Cell[][] {
-  const { cols, totalRows, pairProbability } = levelConfig;
+  const { cols, totalRows } = levelConfig;
   const grid: Cell[][] = [];
 
   // Create empty grid first
@@ -53,56 +53,100 @@ function weightedRandomNumber(weights: number[]): number {
   return 1;
 }
 
-// Fill grid with matching pairs - ensures ALL cells have valid pairs
+// Fill grid strategically - scatter pairs across visible and hidden rows
 function fillGridWithPairs(grid: Cell[][], levelConfig: LevelConfig): void {
-  const { cols, totalRows, pairProbability } = levelConfig;
-  const totalCells = cols * totalRows;
+  const { cols, totalRows, initialRows, pairProbability, id } = levelConfig;
   
-  // Collect all cells
-  const allCells: { row: number; col: number }[] = [];
+  // Collect visible and hidden cells separately
+  const visibleCells: { row: number; col: number }[] = [];
+  const hiddenCells: { row: number; col: number }[] = [];
+  
   for (let row = 0; row < totalRows; row++) {
     for (let col = 0; col < cols; col++) {
-      allCells.push({ row, col });
+      if (row < initialRows) {
+        visibleCells.push({ row, col });
+      } else {
+        hiddenCells.push({ row, col });
+      }
     }
   }
   
-  // Shuffle to randomize pair distribution
-  shuffleArray(allCells);
+  shuffleArray(visibleCells);
+  shuffleArray(hiddenCells);
   
-  // Create pairs - process cells two at a time
-  for (let i = 0; i < allCells.length - 1; i += 2) {
-    const cell1 = allCells[i];
-    const cell2 = allCells[i + 1];
+  // Progressive difficulty: more hidden pairs for harder levels
+  // Level 1: 40% hidden, Level 2: 50% hidden, Level 3: 60% hidden
+  const hiddenRatio = 0.3 + (id * 0.1); // 0.4, 0.5, 0.6
+  const totalVisibleCells = visibleCells.length;
+  const pairsScatteredToHidden = Math.floor((totalVisibleCells / 2) * hiddenRatio);
+  const pairsInVisibleArea = Math.floor(totalVisibleCells / 2) - pairsScatteredToHidden;
+  
+  let hiddenIndex = 0;
+  let pairIndex = 0;
+  
+  // Create pairs
+  for (let i = 0; i < visibleCells.length; i += 2) {
+    if (i + 1 >= visibleCells.length) break;
+    
+    const cell1 = visibleCells[i];
+    let cell2;
+    
+    // Decide if this pair should be scattered to hidden area
+    if (pairIndex < pairsScatteredToHidden && hiddenIndex < hiddenCells.length) {
+      // Scatter one cell to hidden area
+      cell2 = hiddenCells[hiddenIndex];
+      hiddenIndex++;
+    } else {
+      // Keep pair in visible area
+      cell2 = visibleCells[i + 1];
+    }
     
     const useIdenticalPair = Math.random() < pairProbability;
     
     if (useIdenticalPair) {
-      // Create identical pair
       const value = Math.floor(Math.random() * 9) + 1;
       grid[cell1.row][cell1.col].value = value;
       grid[cell2.row][cell2.col].value = value;
     } else {
-      // Create sum-to-10 pair
       const value1 = Math.floor(Math.random() * 9) + 1;
       const value2 = 10 - value1;
       if (value2 >= 1 && value2 <= 9) {
         grid[cell1.row][cell1.col].value = value1;
         grid[cell2.row][cell2.col].value = value2;
       } else {
-        // Fallback to identical pair if sum doesn't work
         const value = Math.floor(Math.random() * 9) + 1;
         grid[cell1.row][cell1.col].value = value;
         grid[cell2.row][cell2.col].value = value;
       }
     }
+    
+    pairIndex++;
   }
   
-  // Handle odd number of cells (if any)
-  if (allCells.length % 2 === 1) {
-    const lastCell = allCells[allCells.length - 1];
-    // Find any cell with same value to pair with
-    const firstCell = allCells[0];
-    grid[lastCell.row][lastCell.col].value = grid[firstCell.row][firstCell.col].value;
+  // Fill remaining hidden cells with random pairs among themselves
+  const remainingHidden = hiddenCells.slice(hiddenIndex);
+  for (let i = 0; i < remainingHidden.length - 1; i += 2) {
+    const cell1 = remainingHidden[i];
+    const cell2 = remainingHidden[i + 1];
+    
+    const useIdenticalPair = Math.random() < pairProbability;
+    
+    if (useIdenticalPair) {
+      const value = Math.floor(Math.random() * 9) + 1;
+      grid[cell1.row][cell1.col].value = value;
+      grid[cell2.row][cell2.col].value = value;
+    } else {
+      const value1 = Math.floor(Math.random() * 9) + 1;
+      const value2 = 10 - value1;
+      if (value2 >= 1 && value2 <= 9) {
+        grid[cell1.row][cell1.col].value = value1;
+        grid[cell2.row][cell2.col].value = value2;
+      } else {
+        const value = Math.floor(Math.random() * 9) + 1;
+        grid[cell1.row][cell1.col].value = value;
+        grid[cell2.row][cell2.col].value = value;
+      }
+    }
   }
 }
 
