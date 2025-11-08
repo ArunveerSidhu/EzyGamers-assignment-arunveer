@@ -1,13 +1,13 @@
 import { LevelButton } from "@/components/startscreen";
 import { LEVELS } from "@/levels";
+import { useRouter } from "expo-router";
 import { ImageBackground, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
 
 export default function StartScreen() {
   const router = useRouter();
   const handleLevelPress = (levelId: number) => {
-    router.push(`/Game`);
+    router.push(`/Game?levelId=${levelId}`);
   };
 
   return (
