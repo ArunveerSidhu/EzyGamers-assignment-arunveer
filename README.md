@@ -4,7 +4,7 @@ A number-matching puzzle game built with React Native and Expo, inspired by Numb
 
 ## 📱 Demo
 
-[Download APK from Releases](#https://github.com/ArunveerSidhu/EzyGamers-assignment-arunveer/releases/tag/submission)
+[Download APK from Releases]
 
 ## 🎯 Game Features
 
@@ -344,6 +344,6 @@ function areAdjacent(cell1: Cell, cell2: Cell, grid: Cell[][]): boolean {
 
 ---
 
-**Developed by Arunveer** | [GitHub Profile](#https://github.com/ArunveerSidhu) | [LinkedIn](#https://www.linkedin.com/in/arunveer-sidhu-1719832b4/)
+**Developed by Arunveer** | [GitHub Profile] | [LinkedIn]
 
-For questions or feedback, please reach out via LinkedIn or email.
+For questions or feedback, please reach out via LinkedIn or email(sidhu.arunveer@gmail.com).
