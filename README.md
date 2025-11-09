@@ -344,6 +344,6 @@ function areAdjacent(cell1: Cell, cell2: Cell, grid: Cell[][]): boolean {
 
 ---
 
-**Developed by Arunveer** | [GitHub Profile] | [LinkedIn]
+**Developed by Arunveer** 
 
 For questions or feedback, please reach out via LinkedIn or email(sidhu.arunveer@gmail.com).
