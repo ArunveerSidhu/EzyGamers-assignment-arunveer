@@ -28,13 +28,13 @@ export default function GameOverModal({
         </Text>
         
         {isVictory && (
-          <Text className="text-white text-xl text-center mb-6">
+          <Text className="text-white text-xl font-star-crush text-center mb-6">
             Time: {timeDisplay}
           </Text>
         )}
 
         {!isVictory && (
-          <Text className="text-gray-400 text-base text-center mb-6">
+          <Text className="text-gray-400 font-star-crush text-xl text-center mb-6">
             Better luck next time!
           </Text>
         )}
@@ -43,10 +43,10 @@ export default function GameOverModal({
           {isVictory && hasNextLevel && onNextLevel && (
             <TouchableOpacity
               onPress={onNextLevel}
-              className="bg-blue-600 py-3 px-6 border-2 border-blue-700 rounded-none"
+              className="bg-[#1c2128] py-3 px-6 border-2 border-[#40444c] rounded-none"
               activeOpacity={0.7}
             >
-              <Text className="text-white text-lg font-luckiest text-center">
+              <Text className="text-white text-lg font-star-crush text-center">
                 NEXT LEVEL
               </Text>
             </TouchableOpacity>
@@ -54,10 +54,10 @@ export default function GameOverModal({
 
           <TouchableOpacity
             onPress={onReplay}
-            className="bg-green-600 py-3 px-6 border-2 border-green-700 rounded-none"
+            className="bg-[#1c2128] py-3 px-6 border-2 border-[#40444c] rounded-none"
             activeOpacity={0.7}
           >
-            <Text className="text-white text-lg font-luckiest text-center">
+            <Text className="text-white text-lg font-star-crush text-center">
               REPLAY
             </Text>
           </TouchableOpacity>
@@ -67,7 +67,7 @@ export default function GameOverModal({
             className="bg-[#40444c] py-3 px-6 border-2 border-[#50555c] rounded-none"
             activeOpacity={0.7}
           >
-            <Text className="text-white text-lg font-luckiest text-center">
+            <Text className="text-white text-lg font-star-crush text-center">
               QUIT
             </Text>
           </TouchableOpacity>

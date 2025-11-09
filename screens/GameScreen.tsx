@@ -92,8 +92,8 @@ export default function GameScreen() {
 
     return (
         <ImageBackground 
-            source={require("@/assets/images/StartScreen/bg.png")} 
-            resizeMode="stretch" 
+            source={require("@/assets/images/GameScreen/bg.png")} 
+            resizeMode="cover"
             className="flex-1"
         >
             <SafeAreaView className="flex-1">

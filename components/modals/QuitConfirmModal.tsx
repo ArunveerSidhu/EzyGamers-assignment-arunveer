@@ -22,10 +22,10 @@ export default function QuitConfirmModal({ visible, onCancel, onConfirm }: QuitC
         <View className="gap-3">
           <TouchableOpacity
             onPress={onConfirm}
-            className="bg-red-600 py-3 px-6 border-2 border-red-700 rounded-none"
+            className="bg-[#1c2128] py-3 px-6 border-2 border-[#40444c] rounded-none"
             activeOpacity={0.7}
           >
-            <Text className="text-white text-lg font-luckiest text-center">
+            <Text className="text-white text-lg font-star-crush text-center">
               YES, QUIT
             </Text>
           </TouchableOpacity>
@@ -35,7 +35,7 @@ export default function QuitConfirmModal({ visible, onCancel, onConfirm }: QuitC
             className="bg-[#40444c] py-3 px-6 border-2 border-[#50555c] rounded-none"
             activeOpacity={0.7}
           >
-            <Text className="text-white text-lg font-luckiest text-center">
+            <Text className="text-white text-lg font-star-crush text-center">
               CANCEL
             </Text>
           </TouchableOpacity>
@@ -44,4 +44,3 @@ export default function QuitConfirmModal({ visible, onCancel, onConfirm }: QuitC
     </Modal>
   );
 }
-
