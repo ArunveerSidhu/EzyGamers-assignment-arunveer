@@ -1,3 +1,5 @@
+https://github.com/user-attachments/assets/818e7b29-96a2-49db-847e-5cba2e471a8b
+
 # Numbo-Tron 🎮
 
 A number-matching puzzle game built with React Native and Expo, inspired by Number Master by KiwiFun. Match numbers that are equal or sum to 10, race against time, and progress through increasingly challenging levels!
